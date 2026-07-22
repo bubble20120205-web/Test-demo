@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>心流·印记</title>
+<style>
+:root{
+  --bg:#F7F5F0;--card:#FFFFFF;--ink:#4A4640;--sub:#9A948A;--line:#E8E4DC;
+  --shadow:0 6px 22px rgba(90,80,70,.08);
+  --maya-r:#D4A5A0;--maya-rbg:rgba(212,165,160,.10);
+  --maya-w:#CFC8BE;--maya-wbg:rgba(207,200,190,.10);
+  --maya-b:#A8BFD4;--maya-bbg:rgba(168,191,212,.10);
+  --maya-y:#D9C9A0;--maya-ybg:rgba(217,201,160,.10);
+  --c-brown:#C4B8A8;--c-brown-bg:rgba(196,184,168,.12);
+  --accent:var(--maya-r);--accent-bg:var(--maya-rbg);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);display:flex;justify-content:center}
+.app{width:100%;max-width:430px;min-height:100dvh;background:var(--bg);position:relative;display:flex;flex-direction:column}
+.hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 6px}
+.hd .logo{font-size:16px;font-weight:700}
+.hd .logo i{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle;margin-right:4px;transition:.5s}
+.hd .tag{font-size:10px;color:var(--sub);background:rgba(0,0,0,.04);padding:3px 10px;border-radius:20px}
+.stat{display:flex;gap:8px;padding:4px 14px 10px}
+.stat .p{flex:1;background:var(--card);border-radius:12px;padding:7px 10px;box-shadow:0 2px 8px rgba(0,0,0,.04);text-align:center}
+.stat .p b{display:block;font-size:16px;line-height:1.2}
+.stat .p small{font-size:10px;color:var(--sub)}
+.sec{display:none;flex:1}
+.sec.on{display:block;padding:4px 14px 100px;overflow-y:auto}
+.hp-s{border-radius:16px;padding:14px 16px;margin-bottom:10px;background:var(--card);box-shadow:var(--shadow);transition:.5s}
+.s1-share{display:flex;gap:12px;align-items:center}
+.s1-share .sa{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:.5s}
+.s1-share .st{flex:1}
+.s1-share .st .sq{font-size:13px;line-height:1.6;margin:0}
+.s1-share .st .sm{font-size:10px;color:var(--sub);margin-top:4px}
+.s2-ms{display:flex;gap:10px}
+.s2-mb{flex:1;border-radius:14px;padding:12px;color:#fff;position:relative;overflow:hidden;transition:.5s;cursor:pointer}
+.s2-mb .mk{font-size:10px;opacity:.85}
+.s2-mb .mnum{font-size:24px;font-weight:800;line-height:1.1;margin:2px 0}
+.s2-mb .mn{font-size:13px;font-weight:600}
+.s2-mb .mt{font-size:11px;opacity:.9;margin-top:1px}
+.s2-hd{display:flex;justify-content:space-between;font-size:11px;color:var(--sub);margin-bottom:3px}
+.s3-rc{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px}
+.s3-rc::-webkit-scrollbar{display:none}
+.s3-chip{flex-shrink:0;border:1.5px solid var(--line);border-radius:20px;padding:5px 12px;font-size:12px;cursor:pointer;transition:.15s}
+.s3-chip .cp-kin{color:var(--sub);font-size:10px}
+.s3-chip.add{border-style:dashed;color:var(--sub)}
+.s4-grid{display:flex;gap:10px;padding:4px 0}
+.s4-lp{flex:1;border-radius:16px;background:var(--accent-bg);border:1px solid var(--line);padding:14px 6px;text-align:center;cursor:pointer;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:6px}
+.s4-lp .lp-ic{font-size:28px;display:block}
+.s4-lp .lp-nm{font-size:12px;font-weight:600;color:var(--ink)}
+.s4-lp .lp-sub{font-size:9px;color:var(--sub)}
+.s4-lp.profile{background:var(--accent);border-color:var(--accent)}
+.s4-lp.profile .lp-nm,.s4-lp.profile .lp-sub{color:#fff}
+.s4-lp:active{transform:scale(.95)}
+.sh{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.sh .sht{font-size:13px;font-weight:600;color:var(--ink)}
+.sh .sha{flex:1;height:1px;background:var(--line)}
+.botline{display:flex;gap:8px;align-items:flex-end}
+.ava{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.chat{height:46vh;overflow-y:auto;padding:6px 2px 10px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:80%;padding:11px 13px;border-radius:16px;font-size:14px;line-height:1.5}
+.msg.bot{align-self:flex-start;background:var(--card);box-shadow:var(--shadow);border-bottom-left-radius:5px}
+.msg.me{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:5px}
+.chat-in{display:flex;gap:8px;padding:10px 0 4px}
+.chat-in input{flex:1;border:1.5px solid var(--line);border-radius:14px;padding:11px 14px;font-size:14px;outline:none}
+.chat-in button{border:none;background:var(--accent);color:#fff;border-radius:14px;padding:0 16px;font-size:14px;font-weight:600;cursor:pointer}
+.bot-card{background:var(--card);border-radius:18px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.tool-bar{display:flex;gap:8px;padding:8px 0;border-top:1px solid var(--line);margin-top:8px}
+.tool-btn{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:8px;font-size:12px;cursor:pointer;transition:.15s}
+.tool-btn:active{transform:scale(.97)}
+.syn{background:var(--accent-bg);border-radius:14px;padding:14px;font-size:13px;line-height:1.7}
+.syn p{margin:0 0 10px}.syn p:last-child{margin:0}
+.disc{font-size:11px;color:var(--sub);margin-top:10px;line-height:1.5}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(255,255,255,.96);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:1px solid var(--line);display:flex;padding:8px 0 calc(8px+env(safe-area-inset-bottom));z-index:20}
+.nav .nb{flex:1;text-align:center;font-size:11px;color:var(--sub);cursor:pointer;padding:4px 0}
+.nav .nb .ic{font-size:20px;display:block;margin-bottom:2px}
+.nav .nb.on{color:var(--accent);font-weight:600}
+.mask{position:fixed;inset:0;background:rgba(40,36,32,.45);display:none;z-index:40;align-items:flex-end;justify-content:center}
+.mask.on{display:flex}
+.sheet{width:100%;max-width:430px;background:var(--bg);border-radius:22px 22px 0 0;padding:18px 16px 24px;max-height:90vh;overflow-y:auto;animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
+.sheet h2{margin:2px 0 4px;font-size:18px}
+.sheet .sub{color:var(--sub);font-size:12px;margin-bottom:14px}
+.close{float:right;font-size:18px;color:var(--sub);cursor:pointer;line-height:1}
+.xform{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+.xform .lbl{font-size:13px;font-weight:600;margin-bottom:8px;display:block}
+.opt-grid{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
+.opt{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:9px 12px;font-size:13px;cursor:pointer;transition:.15s}
+.opt.sel{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);font-weight:600}
+.opt .em{font-size:18px;margin-right:4px}
+.field{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:12px;font-size:14px;margin:4px 0 12px;outline:none}
+.field:focus{border-color:var(--accent)}
+.preview{background:var(--bg);border-radius:12px;padding:12px;font-size:13px;min-height:46px;margin-top:6px}
+.ostep{display:none}.ostep.on{display:block}
+.o-nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+.o-btn{border:none;border-radius:12px;padding:11px 22px;font-size:14px;font-weight:600;cursor:pointer;transition:.2s}
+.o-btn.primary{background:var(--accent);color:#fff}
+.o-btn.ghost{background:transparent;color:var(--sub)}
+.o-btn:active{transform:scale(.97)}
+.o-progress{display:flex;gap:6px;margin-bottom:14px;justify-content:center}
+.o-dot{width:8px;height:8px;border-radius:50%;background:var(--line);transition:.3s}
+.o-dot.active{background:var(--accent)}
+.o-dot.done{background:var(--accent);opacity:.4}
+.dir-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.dir-opt{border:1.5px solid var(--line);border-radius:14px;padding:14px 10px;text-align:center;font-size:14px;cursor:pointer;transition:.15s;background:#fff}
+.dir-opt.sel{border-color:var(--accent);background:var(--accent-bg);font-weight:600}
+.dir-opt:active{transform:scale(.96)}
+.dir-opt .d-ic{font-size:24px;display:block;margin-bottom:4px}
+.sp-hdr{display:flex;align-items:center;gap:10px;padding:10px 0 4px}
+.sp-hdr .sa{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px}
+.sp-hdr .sn{font-size:15px;font-weight:700}
+.sp-hdr .ss{font-size:11px;color:var(--sub)}
+.greeting{font-size:13px;line-height:1.6;margin-top:6px;padding:10px 0}
+.login-splash{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;text-align:center;gap:16px}
+.login-splash .ls-ic{font-size:48px}
+.login-splash .ls-t{font-size:20px;font-weight:700}
+.login-splash .ls-sub{font-size:13px;color:var(--sub);max-width:280px;line-height:1.6}
+.journey-card{background:var(--card);border-radius:18px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px;text-align:center}
+.journey-card .j-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.journey-card .j-desc{font-size:13px;color:var(--sub);line-height:1.6;margin-bottom:16px}
+.journey-progress{display:flex;gap:4px;justify-content:center;margin:16px 0}
+.j-day{width:24px;height:24px;border-radius:6px;background:var(--line);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--sub)}
+.j-day.done{background:var(--accent);color:#fff}
+.j-day.today{border:2px solid var(--accent);background:#fff;color:var(--accent)}
+.record-item{display:flex;align-items:center;gap:12px;padding:12px;border:1.5px solid var(--line);border-radius:14px;margin-bottom:8px;background:#fff;cursor:pointer}
+.record-item .r-ava{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--accent-bg)}
+.record-item .r-info{flex:1}
+.record-item .r-name{font-size:14px;font-weight:600}
+.record-item .r-meta{font-size:11px;color:var(--sub)}
+.hepan-result{background:var(--accent-bg);border-radius:14px;padding:14px;margin:10px 0;font-size:13px;line-height:1.7}
+.hepan-result .hp-title{font-weight:600;margin-bottom:8px}
+.time-row{display:flex;gap:8px;align-items:center}
+.time-row .field{flex:1;margin:0}
+.time-sep{color:var(--sub);font-size:14px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<div class="hd">
+  <div class="logo"><i id="hDot"></i>心流·印记</div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span id="hNick" style="font-size:13px;color:var(--ink)">Demo</span>
+    <span class="tag" style="cursor:pointer;font-size:12px;padding:4px 10px;background:var(--accent);color:#fff;border-radius:16px" onclick="openAddRecord()" title="添加玛雅记录">+ 👥</span>
+  </div>
+</div>
+<div class="stat">
+  <div class="p"><b id="sEnergy">0</b><small>能量</small></div>
+  <div class="p"><b id="sStreak">🔥0</b><small>连胜</small></div>
+  <div class="p"><b id="sCoin">0</b><small>星币</small></div>
+</div>
+
+<!-- ==================== 首页 ==================== -->
+<section class="sec on" id="secHome">
+  <!-- S1: 流日分享 -->
+  <div class="hp-s" style="min-height:88px">
+    <div class="sh"><span class="sht">🌅 流日分享</span><span class="sha"></span></div>
+    <div class="s1-share">
+      <div class="sa" id="s1Avatar">🌞</div>
+      <div class="st">
+        <div class="sq" id="s1Quote">今日玛雅能量落在<b>黄太阳 · 光谱</b>，适合放下不再服务于你的旧模式。</div>
+        <div class="sm">前期由人工输出 · 后期由 AI 学习生成</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- S2: 双玛雅盘 -->
+  <div class="hp-s" style="min-height:162px">
+    <div class="sh"><span class="sht">🔮 玛雅印记</span><span class="sha"></span></div>
+    <div class="s2-hd"><span>我的印记</span><span>今日能量</span></div>
+    <div class="s2-ms">
+      <div class="s2-mb" id="meBox" style="background:linear-gradient(135deg,var(--maya-r),#B0484D)">
+        <div class="mk">KIN</div><div class="mnum" id="meKin">—</div>
+        <div class="mn" id="meName">请设置生日</div><div class="mt" id="meTone">—</div>
+      </div>
+      <div class="s2-mb" id="toBox" style="background:linear-gradient(135deg,var(--maya-y),#C99A28)" onclick="goRead()">
+        <div class="mk">今日 KIN</div><div class="mnum" id="toKin">—</div>
+        <div class="mn" id="toName">—</div><div class="mt" id="toTone">点击查看解读 →</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- S3: 🔧玛雅旅程 -->
+  <div class="hp-s" style="min-height:140px">
+    <div class="sh"><span class="sht">🔧玛雅旅程</span><span class="sha"></span></div>
+    <div class="s2-ms">
+      <div class="s2-mb" style="background:linear-gradient(135deg,var(--c-brown),#6B5344);cursor:pointer" onclick="goRead()">
+        <div class="mk">今日指南</div><div class="mnum">📖</div>
+        <div class="mn">每日解读</div><div class="mt">查看今日能量指引</div>
+      </div>
+      <div class="s2-mb" style="background:linear-gradient(135deg,var(--maya-b),#3A7AB8);cursor:pointer" onclick="goGrow()">
+        <div class="mk">成长旅程</div><div class="mnum">🌱</div>
+        <div class="mn">33天觉醒</div><div class="mt">开启你的蜕变之旅</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- S4: 小精灵+玛雅百科 -->
+  <div class="hp-s" style="min-height:120px">
+    <div class="sh"><span class="sht">🚀快速入口</span><span class="sha"></span></div>
+    <div class="s2-ms">
+      <div class="s2-mb" style="background:linear-gradient(135deg,var(--maya-r),#B0484D);cursor:pointer" onclick="goBot()">
+        <div class="mk">AI 陪伴</div><div class="mnum">🧩</div>
+        <div class="mn">与小精灵聊聊</div><div class="mt">剩余 <span id="freeCount">1</span> 次免费</div>
+      </div>
+      <div class="s2-mb" style="background:linear-gradient(135deg,var(--maya-y),#C99A28);cursor:pointer" onclick="alert('🚧 玛雅百科建设中')">
+        <div class="mk">知识库</div><div class="mnum">📚</div>
+        <div class="mn">玛雅百科</div><div class="mt">图腾 · 调性 · 波幅</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 成长/旅程 ==================== -->
+<section class="sec" id="secGrow">
+  <div id="growNotStarted">
+    <div class="journey-card">
+      <div class="j-title">🌟 33天觉醒之旅</div>
+      <div class="j-desc">完成今日解读并与小精灵对话后，<br>可开启一段33天的自我成长旅程<br>每日打卡获得额外能量与专属指引</div>
+      <button class="o-btn primary" onclick="startJourney()" style="width:80%">开启旅程</button>
+    </div>
+    <div class="bot-card">
+      <h3 style="margin:0 0 12px;font-size:14px;color:var(--sub);font-weight:600">今日免费沟通</h3>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--accent-bg);border-radius:12px">
+        <span>剩余次数：<b id="freeCount2">1</b> 次</span>
+        <button class="o-btn primary" onclick="goBot()">去聊天</button>
+      </div>
+      <div style="margin-top:12px;font-size:12px;color:var(--sub)">
+        💡 次数用完？<a href="#" style="color:var(--accent)">购买沟通包</a> 或 <a href="#" style="color:var(--accent)">订阅会员</a>
+      </div>
+    </div>
+  </div>
+  <div id="growStarted" style="display:none">
+    <div class="journey-card">
+      <div class="j-title">🌟 第 <span id="jDay">1</span> 天 / 33天</div>
+      <div class="journey-progress" id="jProgress"></div>
+      <div class="j-desc" id="jTask">今日任务：完成解读并与小精灵对话</div>
+      <button class="o-btn primary" onclick="doJourneyCheckin()" id="jCheckinBtn">今日打卡</button>
+    </div>
+    <div class="bot-card">
+      <h3 style="margin:0 0 12px;font-size:14px;color:var(--sub);font-weight:600">额外沟通次数</h3>
+      <div style="display:flex;gap:8px">
+        <button class="o-btn ghost" style="flex:1;border:1.5px solid var(--line)">+1次 ¥3</button>
+        <button class="o-btn ghost" style="flex:1;border:1.5px solid var(--line)">包月 ¥29</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 小精灵（聊天+合盘） ==================== -->
+<section class="sec" id="secBot">
+  <div class="bot-card">
+    <div class="sp-hdr">
+      <div class="sa" id="botAva" style="background:var(--accent)">🧩</div>
+      <div>
+        <div class="sn" id="botName">我的小精灵</div>
+        <div class="ss" id="botStyle">未设置</div>
+      </div>
+    </div>
+    <div class="greeting" id="botGreeting">设置完成后，小精灵将根据你的玛雅盘和选择的方向为你解读。</div>
+    <div class="tool-bar">
+      <button class="tool-btn" onclick="openHePan()">🔮 合盘工具</button>
+      <button class="tool-btn" onclick="clearChat()">🗑️ 清空对话</button>
+    </div>
+  </div>
+  <div class="chat" id="chat"></div>
+  <div class="chat-in">
+    <input id="chatInput" placeholder="问问你的小精灵…" />
+    <button id="chatSend">发送</button>
+  </div>
+</section>
+
+<!-- ==================== 我的（玛雅记录+设置） ==================== -->
+<section class="sec" id="secMe">
+  <div class="bot-card">
+    <button class="o-btn primary" onclick="openAddRecord()" style="width:100%;margin-bottom:12px">+ 添加玛雅记录</button>
+    <h3 style="margin:0 0 12px;font-size:14px;color:var(--sub);font-weight:600">👥 玛雅记录</h3>
+    <div id="recordList"></div>
+    <button class="o-btn ghost" onclick="openAddRecord()" style="width:100%;margin-top:8px;border:1.5px solid var(--line)">+ 添加记录</button>
+  </div>
+  <div class="bot-card">
+    <h3 style="margin:0 0 12px;font-size:14px;color:var(--sub);font-weight:600">⚙️ 设置</h3>
+    <div class="task" onclick="openSettings()"><div class="ck"></div><span>个人资料</span></div>
+    <div class="task" onclick="if(confirm('清除所有数据？')){localStorage.removeItem('xl_v2');location.reload();}"><div class="ck"></div><span>重新注册</span></div>
+  </div>
+</section>
+
+<!-- ==================== 解读 ==================== -->
+<section class="sec" id="secRead">
+  <div class="bot-card">
+    <h3 id="readTitle" style="margin:0 0 12px;font-size:14px;color:var(--sub);font-weight:600">今日解读</h3>
+    <div class="syn" id="readBody" style="font-size:13px;line-height:1.85">点击生成今日解读…</div>
+    <div class="disc">⚡ 以玛雅13月亮历为基础，结合你的了解方向生成</div>
+  </div>
+  <div style="text-align:center;padding:20px">
+    <button class="o-btn primary" onclick="genReading()">🔄 重新生成解读</button>
+  </div>
+</section>
+
+<!-- ==================== 注册流程 ==================== -->
+<div class="mask" id="onboardMask">
+<div class="sheet">
+<span class="close" id="obClose">×</span>
+<div class="ostep on" id="ob0">
+  <div class="login-splash">
+    <div class="ls-ic">🧘</div>
+    <div class="ls-t">心流·印记</div>
+    <div class="ls-sub">玛雅历法为底色 · 交织星座与东方数理<br>你的专属小精灵，从认识自己开始</div>
+    <button class="o-btn primary" id="obWechat" style="width:100%;max-width:220px">微信一键登录</button>
+    <button class="o-btn ghost" id="obPhone" style="font-size:12px">或手机号验证码登录</button>
+  </div>
+</div>
+<div class="ostep" id="ob1">
+  <h2>认识你</h2>
+  <div class="sub">填写后自动基于真太阳时排盘</div>
+  <div class="xform">
+    <span class="lbl">你的昵称</span>
+    <input class="field" id="inpNick" placeholder="如：林间旅人" value="小光">
+    <span class="lbl">出生日期</span>
+    <input class="field" id="inpBD" type="date" value="1992-06-15">
+    <span class="lbl">出生时间</span>
+    <div class="time-row">
+      <input class="field" id="inpHour" type="number" placeholder="时" value="8" min="0" max="23" style="flex:1">
+      <span class="time-sep">:</span>
+      <input class="field" id="inpMin" type="number" placeholder="分" value="30" min="0" max="59" style="flex:1">
+    </div>
+    <span class="lbl">性别</span>
+    <div class="opt-grid" id="genderGrid"></div>
+    <span class="lbl">出生地点（自动转换真太阳时）</span>
+    <input class="field" id="inpLoc" placeholder="城市，如：北京" value="北京">
+  </div>
+</div>
+<div class="ostep" id="ob2">
+  <h2>想了解什么？</h2>
+  <div class="sub">可多选，小精灵将围绕这些方向给出解读</div>
+  <div class="dir-grid" id="dirGrid"></div>
+</div>
+<div class="ostep" id="ob3">
+  <h2>创造你的小精灵</h2>
+  <div class="sub">它会以玛雅为底色，带你探索未知</div>
+  <div class="xform">
+    <span class="lbl">小精灵形象</span>
+    <div class="opt-grid" id="formGrid"></div>
+    <span class="lbl">二级细化</span>
+    <div class="opt-grid" id="subGrid"></div>
+  </div>
+  <div class="xform">
+    <span class="lbl">沟通风格</span>
+    <div class="opt-grid" id="styleGrid"></div>
+    <div class="preview" id="stylePreview">选择一个风格，预览它的语气…</div>
+  </div>
+  <div class="o-nav" style="margin-top:8px"><div></div>
+    <button class="o-btn primary" id="obFinish">✨ 开始旅程</button>
+  </div>
+</div>
+<div class="o-nav" id="obNav">
+  <button class="o-btn ghost" id="obPrev">← 上一步</button>
+  <div class="o-progress" id="obProg"></div>
+  <button class="o-btn primary" id="obNext">下一步 →</button>
+</div>
+</div>
+</div>
+
+<!-- ==================== 设置 ==================== -->
+<div class="mask" id="settingsMask">
+<div class="sheet">
+<span class="close" id="setClose">×</span>
+<h2>个人设置</h2>
+<div class="sub">修改基础信息与偏好</div>
+<div class="xform">
+  <span class="lbl">昵称</span>
+  <input class="field" id="setNick" value="">
+  <span class="lbl">了解方向（多选）</span>
+  <div class="dir-grid" id="setDirGrid"></div>
+  <span class="lbl">小精灵形象</span>
+  <div class="opt-grid" id="setFormGrid"></div>
+  <span class="lbl">沟通风格</span>
+  <div class="opt-grid" id="setStyleGrid"></div>
+</div>
+<button class="o-btn primary" id="setSave" style="width:100%">保存修改</button>
+</div>
+</div>
+
+<!-- ==================== 添加玛雅记录 ==================== -->
+<div class="mask" id="recMask">
+<div class="sheet">
+<span class="close" id="recClose">×</span>
+<h2>添加玛雅记录</h2>
+<div class="sub">记录亲友的玛雅盘，用于合盘分析</div>
+<div class="xform">
+  <span class="lbl">昵称</span>
+  <input class="field" id="recNick" placeholder="如：小美">
+  <span class="lbl">关系</span>
+  <input class="field" id="recRel" placeholder="如：伴侣/朋友/家人">
+  <span class="lbl">出生日期</span>
+  <input class="field" id="recBD" type="date" value="1995-08-20">
+  <span class="lbl">出生时间</span>
+  <div class="time-row">
+    <input class="field" id="recHour" type="number" placeholder="时" value="12" min="0" max="23" style="flex:1">
+    <span class="time-sep">:</span>
+    <input class="field" id="recMin" type="number" placeholder="分" value="0" min="0" max="59" style="flex:1">
+  </div>
+  <span class="lbl">出生地点</span>
+  <input class="field" id="recLoc" placeholder="城市，如：上海" value="上海">
+  <div style="text-align:center;font-size:13px;color:var(--sub);padding:10px;background:var(--bg);border-radius:8px;margin-top:8px" id="recPreview"></div>
+</div>
+<button class="o-btn primary" id="recSave" style="width:100%">添加记录</button>
+</div>
+</div>
+
+<!-- ==================== 合盘工具 ==================== -->
+<div class="mask" id="hepanMask">
+<div class="sheet">
+<span class="close" id="hepanClose">×</span>
+<h2>🔮 玛雅合盘</h2>
+<div class="sub">选择一位记录中的亲友，查看关系合盘</div>
+<div class="xform">
+  <span class="lbl">选择对象</span>
+  <select class="field" id="hepanSelect" style="padding:12px">
+    <option value="">-- 选择亲友 --</option>
+  </select>
+  <div id="hepanResult" style="display:none">
+    <div class="hepan-result">
+      <div class="hp-title">合盘分析</div>
+      <div id="hepanContent"></div>
+    </div>
+  </div>
+</div>
+<button class="o-btn primary" id="hepanBtn" style="width:100%">查看合盘</button>
+</div>
+</div>
+
+<!-- ==================== 底部导航 ==================== -->
+<nav class="nav">
+<div class="nb on" data-s="secHome"><span class="ic">🏠</span>首页</div>
+<div class="nb" data-s="secGrow"><span class="ic">🌱</span>成长</div>
+<div class="nb" data-s="secBot"><span class="ic">🧩</span>小精灵</div>
+<div class="nb" data-s="secMe"><span class="ic">👤</span>我的</div>
+</nav>
+</div>
+
+<script>
+// ============ 玛雅历算法 ============
+const TRIBES=[{e:'Imix',z:'红龙'},{e:'Ik',z:'白风'},{e:'Akbal',z:'蓝夜'},{e:'Kan',z:'黄种子'},{e:'Chicchan',z:'红蛇'},{e:'Cimi',z:'白世界桥'},{e:'Manik',z:'蓝手'},{e:'Lamat',z:'黄星星'},{e:'Muluc',z:'红月'},{e:'Oc',z:'白狗'},{e:'Chuen',z:'蓝猴'},{e:'Eb',z:'黄人'},{e:'Ben',z:'红天行者'},{e:'Ix',z:'白巫师'},{e:'Men',z:'蓝鹰'},{e:'Cib',z:'黄战士'},{e:'Caban',z:'红地球'},{e:'Etznab',z:'白镜'},{e:'Cauac',z:'蓝风暴'},{e:'Ahau',z:'黄太阳'}];
+const TONES=[1,2,3,4,5,6,7,8,9,10,11,12,13].map(function(n){return{n:n,z:['磁性','月亮','电力','自我存在','超频','韵律','共振','银河','太阳','行星','光谱','水晶','宇宙'][n-1]}});
+const COLORHEX=['#D96B5E','#CFC6B4','#6E9FC0','#D9A93B'];const COLZ=['红','白','蓝','黄'];
+function julianDay(y,m,d){var a=Math.floor((14-m)/12),yy=y+4800-a,mm=m+12*a-3;return d+Math.floor((153*mm+2)/5)+365*yy+Math.floor(yy/4)-Math.floor(yy/100)+Math.floor(yy/400)-32045}
+function maya(y,m,d){var j=julianDay(y,m,d),days=j-584283,tone=((days+3)%13+13)%13+1,tb=((days+19)%20+20)%20,k=(tone-1)+13*(((17*(tb-(tone-1)))%20+20)%20);return{kin:k+1,tone:tone,tb:tb}}
+function mayaHTML(y,m,d){var r=maya(y,m,d),t=TONES[r.tone-1],tr=TRIBES[r.tb],col=r.tb%4;return{kin:r.kin,tone:'第'+t.n+'调性 · '+t.z,name:tr.z+' ('+tr.e+')',color:COLZ[col],hex:COLORHEX[col]}}
+function shade(hex){var n=parseInt(hex.slice(1),16),r=(n>>16)&255,g=(n>>8)&255,b=n&255;r=Math.max(0,r-30);g=Math.max(0,g-30);b=Math.max(0,b-30);return'#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1)}
+
+// ============ 八字算法 ============
+const GAN=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];const ZHI=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+function dayGZ(y,m,d){var j=julianDay(y,m,d),ref=2451551;return GAN[((j-ref)%10+10)%10]+ZHI[(((j-ref)%12)+12)%12]}
+function yearGZ(y){return GAN[((y-4)%10+10)%10]+ZHI[(((y-4)%12)+12)%12]}
+function monthGZ(y,mon){var yg=((y-4)%10+10)%10,start=[2,4,6,8,0,2,4,6,8,0][yg],g=(start+mon-1)%10;return GAN[g]+ZHI[(mon+1)%12]}
+function hourGZ(dayGan,hour){var zi=Math.floor((hour+1)/2)%12;if(hour===23)zi=0;if(hour===0)zi=0;var start=[0,2,4,6,8,0,2,4,6,8][dayGan];return GAN[(start+zi)%10]+ZHI[zi]}
+function dayGanIdx(y,m,d){var j=julianDay(y,m,d),ref=2451551;return((j-ref)%10+10)%10}
+function bazi(y,m,d,h){var dg=dayGanIdx(y,m,d);return yearGZ(y)+' '+monthGZ(y,m)+' '+dayGZ(y,m,d)+' '+hourGZ(dg,h)}
+
+// ============ 数据定义 ============
+const FORMS=[{key:'人',em:'🧝',name:'人物',subs:[{em:'🧝',n:'温柔守护者'},{em:'🧙',n:'智慧导师'},{em:'🕵️',n:'神秘旅人'}]},{key:'动',em:'🐺',name:'动物',subs:[{em:'🐺',n:'狼'},{em:'🦌',n:'鹿'},{em:'🦉',n:'猫头鹰'},{em:'🦊',n:'狐'}]},{key:'植',em:'🌳',name:'植物',subs:[{em:'🌳',n:'古树'},{em:'💎',n:'水晶花'},{em:'🌿',n:'藤蔓'}]}];
+const STYLES=[{key:'warm',n:'温暖耐心型',prev:'（轻声）慢慢来，我陪你一起看看今天发生了什么，不着急。'},{key:'direct',n:'直给一针见血型',prev:'（干脆）今天核心就一句：别内耗，先动起来。剩下的我直说。'},{key:'cute',n:'可爱俏皮型',prev:'（眨眨眼）嘿～今天能量有点小倔强哦，但本小精灵相信你可以！✨'},{key:'logic',n:'理性睿智型',prev:'（平和）我们拆解一下：今天的三维信号指向「内省」，建议分配 30 分钟给自己。'}];
+const GENDERS=[{k:'男',v:1},{k:'女',v:0}];
+const DIRECTIONS=[{ic:'🌟',n:'天赋'},{ic:'💰',n:'财富'},{ic:'💼',n:'事业'},{ic:'💕',n:'关系'},{ic:'🏡',n:'家庭'}];
+
+// ============ 状态管理 ============
+var S={energy:0,streak:0,coin:0,lastCheck:'',tasks:[false,false,false],bot:null,profile:null,readDone:false,nick:'',directions:['天赋','关系'],records:[],journey:{started:false,day:0,startedDate:''},freeChat:1,lastChatDate:''};
+function load(){try{var r=localStorage.getItem('xl_v2');if(r)S=Object.assign(S,JSON.parse(r));}catch(e){}}
+function save(){localStorage.setItem('xl_v2',JSON.stringify(S));}
+function refreshStat(){document.getElementById('sEnergy').textContent=S.energy;document.getElementById('sStreak').textContent='🔥'+S.streak;document.getElementById('sCoin').textContent=S.coin;updateFreeCount();}
+function updateFreeCount(){var c=document.getElementById('freeCount'),c2=document.getElementById('freeCount2');if(c)c.textContent=S.freeChat;if(c2)c2.textContent=S.freeChat;}
+
+// ============ 主题切换 ============
+function applyTheme(){var t=new Date(),to=mayaHTML(t.getFullYear(),t.getMonth()+1,t.getDate()),map={红:'--maya-r',白:'--maya-w',蓝:'--maya-b',黄:'--maya-y'},cv=map[to.color]||'--maya-r';document.documentElement.style.setProperty('--accent','var('+cv+')');document.documentElement.style.setProperty('--accent-bg','var('+cv+'bg)');document.getElementById('hDot').style.background='var('+cv+')';var sa=document.getElementById('s1Avatar');sa.style.background='var('+cv+')';sa.textContent={红:'🔴',白:'⚪',蓝:'🔵',黄:'🟡'}[to.color]||'🌞';}
+
+// ============ 首页渲染 ============
+function renderHome(){applyTheme();if(!S.profile)return;var me=mayaHTML(S.profile.y,S.profile.m,S.profile.d),t=new Date(),to=mayaHTML(t.getFullYear(),t.getMonth()+1,t.getDate());var mb=document.getElementById('meBox');mb.style.background='linear-gradient(135deg,'+me.hex+','+shade(me.hex)+')';document.getElementById('meKin').textContent=me.kin+' ('+me.color+')';document.getElementById('meName').textContent=me.name;document.getElementById('meTone').textContent=me.tone;var tb=document.getElementById('toBox');tb.style.background='linear-gradient(135deg,'+to.hex+','+shade(to.hex)+')';document.getElementById('toKin').textContent=to.kin+' ('+to.color+')';document.getElementById('toName').textContent=to.name;document.getElementById('toTone').textContent=to.tone;document.getElementById('s1Quote').innerHTML='今日玛雅能量落在<b>'+to.name+' · '+to.tone+'</b>，感受<span style="color:'+to.hex+'">'+to.color+'色的流动</span>，让直觉带路。';document.getElementById('hNick').textContent=S.nick||'Demo';}
+
+// ============ 导航 ============
+function showSec(id){document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});document.getElementById(id).classList.add('on');document.querySelectorAll('.nb').forEach(function(n){n.classList.remove('on');if(n.dataset.s===id)n.classList.add('on');});if(id==='secHome')renderHome();if(id==='secGrow')renderGrow();if(id==='secMe')renderRecords();if(id==='secBot')renderBot();}
+function goRead(){showSec('secRead');if(!S.readDone)genReading();}
+function goGrow(){showSec('secGrow');}
+function goBot(){showSec('secBot');}
+
+// ============ 注册流程 ============
+var obStep=0,selForm2=null,selSub2=null,selStyle2=null,selGender2=1;
+function buildDirs(id,sel){var g=document.getElementById(id);if(!g)return;g.innerHTML='';DIRECTIONS.forEach(function(d){var o=document.createElement('div');o.className='dir-opt';o.innerHTML='<span class="d-ic">'+d.ic+'</span>'+d.n;if(sel&&sel.indexOf(d.n)>=0)o.classList.add('sel');o.onclick=function(){o.classList.toggle('sel');};g.appendChild(o);});}
+function showStep(n){document.querySelectorAll('.ostep').forEach(function(s){s.classList.remove('on');});document.getElementById('ob'+n).classList.add('on');document.querySelectorAll('.o-dot').forEach(function(d,i){d.className='o-dot'+(i===n?' active':'')+(i<n?' done':'');});document.getElementById('obPrev').style.display=n===0?'none':'inline-block';document.getElementById('obNext').style.display=n>=3?'none':'inline-block';obStep=n;}
+function buildUi(){var fg=document.getElementById('formGrid');fg.innerHTML='';FORMS.forEach(function(f){var o=document.createElement('div');o.className='opt';o.innerHTML='<span class="em">'+f.em+'</span>'+f.name;o.onclick=function(){selForm2=f;document.querySelectorAll('#formGrid .opt').forEach(function(x){x.classList.remove('sel');});o.classList.add('sel');buildSub();};fg.appendChild(o);});var sg=document.getElementById('styleGrid');sg.innerHTML='';STYLES.forEach(function(s){var o=document.createElement('div');o.className='opt';o.textContent=s.n;o.onclick=function(){selStyle2=s;document.querySelectorAll('#styleGrid .opt').forEach(function(x){x.classList.remove('sel');});o.classList.add('sel');document.getElementById('stylePreview').textContent=s.prev;};sg.appendChild(o);});var gg=document.getElementById('genderGrid');gg.innerHTML='';GENDERS.forEach(function(g){var o=document.createElement('div');o.className='opt';o.textContent=g.k;o.onclick=function(){selGender2=g.v;document.querySelectorAll('#genderGrid .opt').forEach(function(x){x.classList.remove('sel');});o.classList.add('sel');};gg.appendChild(o);});}
+function buildSub(){var sg=document.getElementById('subGrid');sg.innerHTML='';if(!selForm2)return;selForm2.subs.forEach(function(s){var o=document.createElement('div');o.className='opt';o.innerHTML='<span class="em">'+s.em+'</span>'+s.n;o.onclick=function(){selSub2=s;document.querySelectorAll('#subGrid .opt').forEach(function(x){x.classList.remove('sel');});o.classList.add('sel');};sg.appendChild(o);});}
+function finishOnboard(){if(!selForm2||!selSub2||!selStyle2){alert('请完成小精灵形象和风格的选择');return;}var nick=document.getElementById('inpNick').value.trim()||'旅人',bd=document.getElementById('inpBD').value,hh=parseInt(document.getElementById('inpHour').value)||8,mm=parseInt(document.getElementById('inpMin').value)||0,loc=document.getElementById('inpLoc').value||'北京',parts=bd.split('-').map(Number),dirs=Array.from(document.querySelectorAll('#dirGrid .dir-opt.sel')).map(function(x){return x.textContent.trim();});S.nick=nick;S.profile={y:parts[0],m:parts[1],d:parts[2],h:hh,min:mm,loc:loc,gen:selGender2};S.directions=dirs.length?dirs:['天赋','关系'];S.bot={form:selForm2.name,sub:selSub2.n,style:selStyle2.key,name:'小精灵',call:nick};S.records=S.records||[];save();document.getElementById('onboardMask').classList.remove('on');renderBot();refreshStat();renderHome();genReading();botSay('你好，'+nick+'～ 我是你的小精灵。你选的方向是「'+S.directions.join('、')+'」，有想问的直接告诉我 ✨');}
+function startOnboard(){document.getElementById('onboardMask').classList.add('on');showStep(0);buildDirs('dirGrid',S.directions||[]);buildUi();}
+
+// ============ 小精灵 ============
+function renderBot(){if(!S.bot)return;document.getElementById('botName').textContent='小精灵 · '+S.bot.name;var st=STYLES.find(function(s){return s.key===S.bot.style;});document.getElementById('botStyle').textContent=S.bot.form+' · '+(st?st.n:'');var f=FORMS.find(function(x){return x.name===S.bot.form;});var s=f?f.subs.find(function(x){return x.n===S.bot.sub;}):null;document.getElementById('botAva').textContent=s?s.em:'🧩';document.getElementById('botGreeting').textContent=S.nick+'，我在这里。围绕「'+(S.directions||['天赋']).join('、')+'」为你解读。';document.getElementById('botAva').style.background='var(--accent)';}
+function botSay(t){var c=document.getElementById('chat'),d=document.createElement('div');d.className='botline';var f=FORMS.find(function(x){return x.name===S.bot&&S.bot.form||null;});var s2=f&&f.subs?f.subs.find(function(x){return x.n===(S.bot||{}).sub;}):null;d.innerHTML='<div class="ava" style="background:var(--accent);font-size:20px">'+(s2?s2.em:'🧩')+'</div><div class="msg bot">'+t+'</div>';c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function meSay(t){var c=document.getElementById('chat'),d=document.createElement('div');d.className='msg me';d.textContent=t;c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function clearChat(){document.getElementById('chat').innerHTML='';}
+function canChat(){var today=new Date().toDateString();if(S.lastChatDate!==today){S.freeChat=1;S.lastChatDate=today;save();}return S.freeChat>0||S.journey.started;}
+function useChat(){if(!canChat()){alert('今日免费次数已用完，可购买沟通包或开启旅程');return false;}S.freeChat--;save();updateFreeCount();return true;}
+function reply(user){if(!S.bot)return;if(!useChat())return;var st=S.bot.style,call=S.nick||S.bot.call,u=user.toLowerCase(),dd=(S.directions||['天赋'])[0];if(u.indexOf('今天')>=0||u.indexOf('解读')>=0||u.indexOf('能量')>=0||u.indexOf('方向')>=0){if(st==='warm')botSay(call+'，今天的汇总我看了——尤其关于「'+dd+'」的部分有信号。不急，慢慢来。');else if(st==='direct')botSay(call+'，直接说：今天重点关注「'+dd+'」。');else if(st==='cute')botSay('诶~ '+call+'今天要温柔对待自己哦！你关注的「'+dd+'」有悄悄变化✨');else botSay(call+'，今日三维交叉共识偏向「静」与「稳」。你关注的'+(S.directions||['天赋']).join('、')+'方向，建议先做一日的微调。');return;}if(u.indexOf('你好')>=0||u.indexOf('hi')>=0||u.indexOf('在吗')>=0){if(st==='warm')botSay('我在的，'+call+'。今天感觉怎么样？');else if(st==='direct')botSay('在。说吧。');else if(st==='cute')botSay('嘿嘿本小精灵闪亮登场！今天要聊什么呀~');else botSay(call+'，我已就位。关于'+dd+'有新的交叉信号。');return;}var pool={warm:call+'，我听见你了。要不要去看看今日的解读？',direct:'别想太多，先做一件小事。',cute:'抱抱~ 我一直在！💛',logic:'建议先完成今日签到，激活连胜节奏。'};botSay(pool[st]||pool.warm);}
+
+// ============ 解读 ============
+function genReading(){if(!S.profile){alert('请先设置生日信息');return;}var t=new Date(),me=mayaHTML(S.profile.y,S.profile.m,S.profile.d),to=mayaHTML(t.getFullYear(),t.getMonth()+1,t.getDate());document.getElementById('readTitle').textContent=to.name+'（KIN '+to.kin+'）· '+to.tone;var dirs=S.directions||['天赋','关系'],pool={'天赋':'你与生俱来的「'+me.name+'」底色，在今天「'+to.name+'」的节律下，适合把天赋用在「安静打磨而非向外扩张」的事上。','财富':'能量层面宜「收」不宜「放」——今天不适合做大额决策，梳理已有资源比开拓新局更划算。','事业':'把今天当成「校准」而非「冲刺」：分配 20 分钟回顾方向，比硬推进度更有效率。','关系':'今天的关系课题偏向「'+to.tone.split('·')[0].trim()+'」的节奏——少说多听，比主动推进更被接纳。','家庭':'今日能量对「家庭场域」的提示：围绕安稳建立节奏，小事上的坚持比大动作更有累积效应。'};var body='<p style="margin:0 0 10px;font-size:14px;font-weight:600">按你的了解方向：</p>';dirs.forEach(function(d){if(pool[d])body+='<p style="margin:0 0 8px"><b>'+d+'</b>　'+pool[d]+'</p>';});document.getElementById('readBody').innerHTML=body;S.readDone=true;save();}
+
+// ============ 成长/旅程 ============
+function renderGrow(){var today=new Date().toDateString();if(S.lastChatDate!==today){S.freeChat=1;S.lastChatDate=today;save();}updateFreeCount();if(!S.journey.started){document.getElementById('growNotStarted').style.display='block';document.getElementById('growStarted').style.display='none';}else{document.getElementById('growNotStarted').style.display='none';document.getElementById('growStarted').style.display='block';document.getElementById('jDay').textContent=S.journey.day;var box=document.getElementById('jProgress');box.innerHTML='';for(var i=1;i<=33;i++){var d=document.createElement('div');d.className='j-day';d.textContent=i;if(i<S.journey.day)d.classList.add('done');if(i===S.journey.day)d.classList.add('today');box.appendChild(d);}var checked=S.lastCheck===today;document.getElementById('jCheckinBtn').textContent=checked?'已打卡':'今日打卡';document.getElementById('jCheckinBtn').disabled=checked;}}
+function startJourney(){if(!S.readDone){alert('请先完成今日解读并与小精灵对话');return;}S.journey.started=true;S.journey.day=1;S.journey.startedDate=new Date().toDateString();save();renderGrow();}
+function doJourneyCheckin(){var today=new Date().toDateString();if(S.lastCheck===today){alert('今天已打卡');return;}S.journey.day++;S.streak++;S.energy+=20+S.streak;S.coin+=5;S.lastCheck=today;save();refreshStat();renderGrow();}
+
+// ============ 玛雅记录 ============
+function renderRecords(){var box=document.getElementById('recordList');box.innerHTML='';if(!S.records||S.records.length===0){box.innerHTML='<div style="text-align:center;color:var(--sub);padding:20px">暂无记录，点击添加</div>';return;}S.records.forEach(function(r,i){var div=document.createElement('div');div.className='record-item';div.onclick=function(){selectRecord(i);};var m=mayaHTML(r.y,r.m,r.d);div.innerHTML='<div class="r-ava" style="background:'+m.hex+'20">'+m.color+'</div><div class="r-info"><div class="r-name">'+r.nick+' · '+r.rel+'</div><div class="r-meta">'+r.y+'-'+String(r.m).padStart(2,'0')+'-'+String(r.d).padStart(2,'0')+' '+String(r.h).padStart(2,'0')+':'+String(r.min).padStart(2,'0')+' · '+r.loc+' · KIN'+m.kin+'</div></div>';box.appendChild(div);});updateHepanSelect();}
+function openAddRecord(){document.getElementById('recMask').classList.add('on');updateRecPreview();}
+function updateRecPreview(){var bd=document.getElementById('recBD').value;if(!bd)return;var p=bd.split('-').map(Number),h=parseInt(document.getElementById('recHour').value)||0,mi=parseInt(document.getElementById('recMin').value)||0;var m=mayaHTML(p[0],p[1],p[2]),bz=bazi(p[0],p[1],p[2],h);document.getElementById('recPreview').innerHTML='<b>'+m.name+'</b> · KIN '+m.kin+' · '+m.color+'色<br><small>'+bz+'</small>';}
+function saveRecord(){var nick=document.getElementById('recNick').value.trim(),rel=document.getElementById('recRel').value.trim(),bd=document.getElementById('recBD').value,loc=document.getElementById('recLoc').value.trim();if(!nick||!bd){alert('请填写昵称和生日');return;}var p=bd.split('-').map(Number),h=parseInt(document.getElementById('recHour').value)||0,mi=parseInt(document.getElementById('recMin').value)||0;S.records.push({nick:nick,rel:rel||'朋友',y:p[0],m:p[1],d:p[2],h:h,min:mi,loc:loc||'未知'});save();document.getElementById('recMask').classList.remove('on');document.getElementById('recNick').value='';document.getElementById('recRel').value='';renderRecords();}
+var selectedRecordIdx=-1;
+function selectRecord(idx){selectedRecordIdx=idx;var r=S.records[idx];alert('已选择：'+r.nick+'\n可用于合盘分析');}
+
+// ============ 合盘工具 ============
+function updateHepanSelect(){var sel=document.getElementById('hepanSelect');sel.innerHTML='<option value="">-- 选择亲友 --</option>';(S.records||[]).forEach(function(r,i){var m=mayaHTML(r.y,r.m,r.d);var opt=document.createElement('option');opt.value=i;opt.textContent=r.nick+' · KIN'+m.kin;sel.appendChild(opt);});}
+function openHePan(){if(!S.records||S.records.length===0){alert('请先添加玛雅记录');return;}document.getElementById('hepanMask').classList.add('on');document.getElementById('hepanResult').style.display='none';}
+function doHePan(){var idx=document.getElementById('hepanSelect').value;if(idx===''){alert('请选择一位亲友');return;}var r=S.records[parseInt(idx)],me=S.profile;if(!me){alert('请先完成注册');return;}var m1=maya(me.y,me.m,me.d),m2=maya(r.y,r.m,r.d);var diff=(m2.kin-m1.kin+260)%260;var guanxi='';if(diff===0)guanxi='相同印记 · 镜像共鸣';else if(diff===130)guanxi='相反印记 · 互补挑战';else if(diff%20===0)guanxi='相同图腾 · 同频共振';else if(diff%13===0)guanxi='相同调性 · 节奏同步';else if([1,259].indexOf(diff)>=0)guanxi='相邻KIN · 启动关系';else guanxi='自由组合 · 独特课题';var html='<p><b>你的KIN：</b>'+m1.kin+' · '+mayaHTML(me.y,me.m,me.d).name+'</p>';html+='<p><b>'+r.nick+'的KIN：</b>'+m2.kin+' · '+mayaHTML(r.y,r.m,r.d).name+'</p>';html+='<p><b>KIN差值：</b>'+diff+'</p>';html+='<p><b>关系关键词：</b>'+guanxi+'</p>';html+='<p style="margin-top:12px">💡 小精灵可以结合这个合盘，为你解读两人关系的潜在课题与成长方向。</p>';document.getElementById('hepanContent').innerHTML=html;document.getElementById('hepanResult').style.display='block';}
+
+// ============ 设置 ============
+function openSettings(){document.getElementById('settingsMask').classList.add('on');document.getElementById('setNick').value=S.nick||'';buildDirs('setDirGrid',S.directions);var fg=document.getElementById('setFormGrid');fg.innerHTML='';FORMS.forEach(function(f){var o=document.createElement('div');o.className='opt'+(f.name===(S.bot||{}).form?' sel':'');o.innerHTML='<span class="em">'+f.em+'</span>'+f.name;o.onclick=function(){if(S.bot)S.bot.form=f.name;document.querySelectorAll('#setFormGrid .opt').forEach(function(x){x.classList.remove('sel');});o.classList.add('sel');};fg.appendChild(o);});var sg=document.getElementById('setStyleGrid');sg.innerHTML='';STYLES.forEach(function(s){var o=document.createElement('div');o.className='opt'+(s.key===(S.bot||{}).style?' sel':'');o.textContent=s.n;o.onclick=function(){if(S.bot)S.bot.style=s.key;document.querySelectorAll('#setStyleGrid .opt').forEach(function(x){x.classList.remove('sel');});o.classList.add('sel');};sg.appendChild(o);});}
+function saveSettings(){var n=document.getElementById('setNick').value.trim();if(n)S.nick=n;S.directions=Array.from(document.querySelectorAll('#setDirGrid .dir-opt.sel')).map(function(x){return x.textContent.trim();});save();refreshStat();renderHome();renderBot();document.getElementById('settingsMask').classList.remove('on');}
+
+// ============ 初始化 ============
+load();applyTheme();refreshStat();buildDirs('dirGrid',S.directions||[]);
+if(S.bot){renderBot();renderHome();if(S.readDone)genReading();}else{startOnboard();}
+(function(){var p=document.getElementById('obProg');for(var i=0;i<4;i++){var d=document.createElement('div');d.className='o-dot'+(i===0?' active':'');p.appendChild(d);}})();
+
+// ============ 事件绑定 ============
+document.querySelectorAll('.nb').forEach(function(n){n.onclick=function(){showSec(n.dataset.s);};});
+document.getElementById('obClose').onclick=function(){if(S.bot)document.getElementById('onboardMask').classList.remove('on');};
+document.getElementById('obWechat').onclick=function(){showStep(1);buildDirs('dirGrid',S.directions||[]);buildUi();};
+document.getElementById('obPhone').onclick=function(){showStep(1);buildDirs('dirGrid',S.directions||[]);buildUi();};
+document.getElementById('obNext').onclick=function(){if(obStep===0)showStep(1);else if(obStep===1)showStep(2);else if(obStep===2){showStep(3);buildUi();}};
+document.getElementById('obPrev').onclick=function(){if(obStep>0)showStep(obStep-1);};
+document.getElementById('obFinish').onclick=finishOnboard;
+document.getElementById('chatSend').onclick=function(){var v=document.getElementById('chatInput').value.trim();if(!v)return;meSay(v);document.getElementById('chatInput').value='';reply(v);};
+document.getElementById('chatInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('chatSend').click();});
+document.getElementById('setClose').onclick=function(){document.getElementById('settingsMask').classList.remove('on');};
+document.getElementById('setSave').onclick=saveSettings;
+document.getElementById('recClose').onclick=function(){document.getElementById('recMask').classList.remove('on');};
+document.getElementById('recSave').onclick=saveRecord;
+document.getElementById('recBD').onchange=updateRecPreview;
+document.getElementById('recHour').onchange=updateRecPreview;
+document.getElementById('recMin').onchange=updateRecPreview;
+document.getElementById('hepanClose').onclick=function(){document.getElementById('hepanMask').classList.remove('on');};
+document.getElementById('hepanBtn').onclick=doHePan;
+</script>
+</body>
+</html>
